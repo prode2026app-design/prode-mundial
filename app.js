@@ -57,6 +57,12 @@ const groupNameInput =
 const groupsList =
   document.getElementById("groupsList");
 
+const joinCodeInput =
+  document.getElementById("joinCode");
+
+const joinGroupBtn =
+  document.getElementById("joinGroupBtn");
+
 let currentUser = null;
 
 loginBtn.addEventListener("click", async () => {
@@ -185,3 +191,78 @@ async function loadGroups() {
   });
 
 }
+
+joinGroupBtn.addEventListener("click", async () => {
+
+  const code =
+    joinCodeInput.value.trim().toUpperCase();
+
+  if (!code) {
+
+    alert("Ingresá un código");
+
+    return;
+
+  }
+
+  try {
+
+    const q = query(
+      collection(db, "groups"),
+      where("code", "==", code)
+    );
+
+    const querySnapshot =
+      await getDocs(q);
+
+    if (querySnapshot.empty) {
+
+      alert("Grupo no encontrado");
+
+      return;
+
+    }
+
+    querySnapshot.forEach(async (docu) => {
+
+      const group = docu.data();
+
+      if (
+        group.members.includes(currentUser.uid)
+      ) {
+
+        alert("Ya estás en el grupo");
+
+        return;
+
+      }
+
+      const updatedMembers = [
+        ...group.members,
+        currentUser.uid
+      ];
+
+      await setDoc(doc(db, "groups", docu.id), {
+
+        ...group,
+        members: updatedMembers
+
+      });
+
+      alert("Te uniste al grupo");
+
+      joinCodeInput.value = "";
+
+      loadGroups();
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Error al unirse");
+
+  }
+
+});
