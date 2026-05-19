@@ -8,6 +8,12 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAOWQZwhs0D0-FFMiLKjNh5mpfgTmryK0M",
   authDomain: "prode2026-9cfe0.firebaseapp.com",
@@ -16,9 +22,12 @@ const firebaseConfig = {
   messagingSenderId: "1063515027774",
   appId: "1:1063515027774:web:3bdd9e9c46885cd1c4946f"
 };
+
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+
+const db = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 
@@ -35,7 +44,7 @@ loginBtn.addEventListener("click", () => {
 getRedirectResult(auth)
   .then((result) => {
 
-    console.log("Redirect completado", result);
+    console.log("Login completado");
 
   })
   .catch((error) => {
@@ -44,21 +53,34 @@ getRedirectResult(auth)
 
   });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (user) {
+
+    loginBtn.style.display = "none";
 
     userInfo.innerText =
       `Hola ${user.displayName}`;
 
-    loginBtn.style.display = "none";
+    await setDoc(doc(db, "users", user.uid), {
+
+      name: user.displayName,
+      email: user.email,
+      photo: user.photoURL,
+      uid: user.uid,
+      createdAt: new Date()
+
+    });
+
+    console.log("Usuario guardado");
 
   } else {
 
-    userInfo.innerText = "";
-
     loginBtn.style.display = "block";
+
+    userInfo.innerText = "";
 
   }
 
 });
+
