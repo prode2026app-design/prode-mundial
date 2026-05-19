@@ -4,7 +4,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithRedirect,
-  getRedirectResult
+  getRedirectResult,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -15,7 +16,6 @@ const firebaseConfig = {
   messagingSenderId: "1063515027774",
   appId: "1:1063515027774:web:3bdd9e9c46885cd1c4946f"
 };
-
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
@@ -35,18 +35,30 @@ loginBtn.addEventListener("click", () => {
 getRedirectResult(auth)
   .then((result) => {
 
-    if (result && result.user) {
-
-      userInfo.innerText =
-        `Hola ${result.user.displayName}`;
-
-    }
+    console.log("Redirect completado", result);
 
   })
   .catch((error) => {
 
     console.error(error);
 
-    alert("Error al iniciar sesión");
-
   });
+
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+
+    userInfo.innerText =
+      `Hola ${user.displayName}`;
+
+    loginBtn.style.display = "none";
+
+  } else {
+
+    userInfo.innerText = "";
+
+    loginBtn.style.display = "block";
+
+  }
+
+});
