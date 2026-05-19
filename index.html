@@ -10,15 +10,36 @@
 <body>
 
   <div class="container">
+
     <h1>⚽ Prode Mundial</h1>
 
     <button id="loginBtn">
       Iniciar sesión con Google
     </button>
 
-    <p id="userInfo"></p>
+    <div id="app" style="display:none;">
+
+      <p id="userInfo"></p>
+
+      <input
+        type="text"
+        id="groupName"
+        placeholder="Nombre del grupo"
+      />
+
+      <button id="createGroupBtn">
+        Crear grupo
+      </button>
+
+      <h2>Mis grupos</h2>
+
+      <div id="groupsList"></div>
+
+    </div>
+
   </div>
 
   <script type="module" src="app.js"></script>
+
 </body>
 </html>
