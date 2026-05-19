@@ -17,7 +17,8 @@ import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -62,6 +63,24 @@ const joinCodeInput =
 
 const joinGroupBtn =
   document.getElementById("joinGroupBtn");
+
+const homeScreen =
+  document.getElementById("homeScreen");
+
+const groupScreen =
+  document.getElementById("groupScreen");
+
+const groupTitle =
+  document.getElementById("groupTitle");
+
+const groupCode =
+  document.getElementById("groupCode");
+
+const membersList =
+  document.getElementById("membersList");
+
+const backBtn =
+  document.getElementById("backBtn");
 
 let currentUser = null;
 
@@ -184,6 +203,9 @@ async function loadGroups() {
     div.innerHTML = `
       <h3>${group.name}</h3>
       <p>Código: ${group.code}</p>
+      <button onclick="openGroup('${docu.id}')">
+        Entrar
+      </button>
     `;
 
     groupsList.appendChild(div);
@@ -264,5 +286,62 @@ joinGroupBtn.addEventListener("click", async () => {
     alert("Error al unirse");
 
   }
+
+});
+
+window.openGroup = async (groupId) => {
+
+  homeScreen.style.display = "none";
+
+  groupScreen.style.display = "block";
+
+  const groupRef =
+    doc(db, "groups", groupId);
+
+  const groupSnap =
+    await getDoc(groupRef);
+
+  const group =
+    groupSnap.data();
+
+  groupTitle.innerText =
+    group.name;
+
+  groupCode.innerText =
+    `Código: ${group.code}`;
+
+  membersList.innerHTML = "";
+
+  for (const uid of group.members) {
+
+    const userRef =
+      doc(db, "users", uid);
+
+    const userSnap =
+      await getDoc(userRef);
+
+    const user =
+      userSnap.data();
+
+    const div =
+      document.createElement("div");
+
+    div.className = "member-card";
+
+    div.innerHTML = `
+      ${user.name}
+    `;
+
+    membersList.appendChild(div);
+
+  }
+
+};
+
+backBtn.addEventListener("click", () => {
+
+  groupScreen.style.display = "none";
+
+  homeScreen.style.display = "block";
 
 });
