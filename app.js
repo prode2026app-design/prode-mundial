@@ -5,7 +5,9 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -35,27 +37,39 @@ const loginBtn = document.getElementById("loginBtn");
 
 const userInfo = document.getElementById("userInfo");
 
-loginBtn.addEventListener("click", () => {
+await setPersistence(auth, browserLocalPersistence);
 
-  signInWithRedirect(auth, provider);
+loginBtn.addEventListener("click", async () => {
+
+  try {
+
+    await signInWithRedirect(auth, provider);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Error login");
+
+  }
 
 });
 
 getRedirectResult(auth)
   .then((result) => {
 
-    console.log("Redirect OK");
+    console.log("Redirect result:", result);
 
   })
   .catch((error) => {
 
-    console.error("ERROR REDIRECT:", error);
+    console.error("Redirect error:", error);
 
   });
 
 onAuthStateChanged(auth, async (user) => {
 
-  console.log("Estado auth:", user);
+  console.log("Usuario detectado:", user);
 
   if (user) {
 
@@ -76,15 +90,11 @@ onAuthStateChanged(auth, async (user) => {
 
       });
 
-      console.log("USUARIO GUARDADO OK");
-
-      alert("Usuario guardado correctamente");
+      console.log("Usuario guardado");
 
     } catch (error) {
 
-      console.error("ERROR FIRESTORE:", error);
-
-      alert("Error Firestore");
+      console.error("Firestore error:", error);
 
     }
 
