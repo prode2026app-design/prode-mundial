@@ -3,8 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence
@@ -31,78 +30,60 @@ const auth = getAuth(app);
 
 const db = getFirestore(app);
 
+await setPersistence(auth, browserLocalPersistence);
+
 const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById("loginBtn");
+const loginBtn =
+  document.getElementById("loginBtn");
 
-const userInfo = document.getElementById("userInfo");
-
-await setPersistence(auth, browserLocalPersistence);
+const userInfo =
+  document.getElementById("userInfo");
 
 loginBtn.addEventListener("click", async () => {
 
   try {
 
-    await signInWithRedirect(auth, provider);
+    const result =
+      await signInWithPopup(auth, provider);
+
+    const user = result.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+
+      name: user.displayName,
+      email: user.email,
+      photo: user.photoURL,
+      uid: user.uid,
+      createdAt: new Date()
+
+    });
+
+    userInfo.innerText =
+      `Hola ${user.displayName}`;
+
+    loginBtn.style.display = "none";
+
+    alert("Login correcto");
 
   } catch (error) {
 
     console.error(error);
 
-    alert("Error login");
+    alert(error.message);
 
   }
 
 });
 
-getRedirectResult(auth)
-  .then((result) => {
-
-    console.log("Redirect result:", result);
-
-  })
-  .catch((error) => {
-
-    console.error("Redirect error:", error);
-
-  });
-
-onAuthStateChanged(auth, async (user) => {
-
-  console.log("Usuario detectado:", user);
+onAuthStateChanged(auth, (user) => {
 
   if (user) {
-
-    loginBtn.style.display = "none";
 
     userInfo.innerText =
       `Hola ${user.displayName}`;
 
-    try {
-
-      await setDoc(doc(db, "users", user.uid), {
-
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-        uid: user.uid,
-        createdAt: new Date()
-
-      });
-
-      console.log("Usuario guardado");
-
-    } catch (error) {
-
-      console.error("Firestore error:", error);
-
-    }
-
-  } else {
-
-    loginBtn.style.display = "block";
-
-    userInfo.innerText = "";
+    loginBtn.style.display = "none";
 
   }
 
