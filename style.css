@@ -5,20 +5,43 @@ body {
   color: white;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  padding-top: 40px;
+  min-height: 100vh;
 }
 
 .container {
+  width: 90%;
+  max-width: 400px;
+}
+
+h1, h2 {
   text-align: center;
 }
 
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
 button {
-  padding: 12px 20px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
   border: none;
   border-radius: 10px;
   background: #22c55e;
   color: white;
   font-size: 16px;
   cursor: pointer;
+}
+
+.group-card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
 }
