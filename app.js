@@ -44,16 +44,18 @@ loginBtn.addEventListener("click", () => {
 getRedirectResult(auth)
   .then((result) => {
 
-    console.log("Login completado");
+    console.log("Redirect OK");
 
   })
   .catch((error) => {
 
-    console.error(error);
+    console.error("ERROR REDIRECT:", error);
 
   });
 
 onAuthStateChanged(auth, async (user) => {
+
+  console.log("Estado auth:", user);
 
   if (user) {
 
@@ -62,17 +64,29 @@ onAuthStateChanged(auth, async (user) => {
     userInfo.innerText =
       `Hola ${user.displayName}`;
 
-    await setDoc(doc(db, "users", user.uid), {
+    try {
 
-      name: user.displayName,
-      email: user.email,
-      photo: user.photoURL,
-      uid: user.uid,
-      createdAt: new Date()
+      await setDoc(doc(db, "users", user.uid), {
 
-    });
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        uid: user.uid,
+        createdAt: new Date()
 
-    console.log("Usuario guardado");
+      });
+
+      console.log("USUARIO GUARDADO OK");
+
+      alert("Usuario guardado correctamente");
+
+    } catch (error) {
+
+      console.error("ERROR FIRESTORE:", error);
+
+      alert("Error Firestore");
+
+    }
 
   } else {
 
@@ -83,4 +97,3 @@ onAuthStateChanged(auth, async (user) => {
   }
 
 });
-
