@@ -3,7 +3,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithRedirect,
+  getRedirectResult
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -25,23 +26,27 @@ const loginBtn = document.getElementById("loginBtn");
 
 const userInfo = document.getElementById("userInfo");
 
-loginBtn.addEventListener("click", async () => {
+loginBtn.addEventListener("click", () => {
 
-  try {
+  signInWithRedirect(auth, provider);
 
-    const result = await signInWithPopup(auth, provider);
+});
 
-    const user = result.user;
+getRedirectResult(auth)
+  .then((result) => {
 
-    userInfo.innerText =
-      `Hola ${user.displayName}`;
+    if (result && result.user) {
 
-  } catch (error) {
+      userInfo.innerText =
+        `Hola ${result.user.displayName}`;
+
+    }
+
+  })
+  .catch((error) => {
 
     console.error(error);
 
     alert("Error al iniciar sesión");
 
-  }
-
-});
+  });
